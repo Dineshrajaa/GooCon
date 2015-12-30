@@ -37,10 +37,11 @@ var app = {
         console.log("Device Ready");
     },
     // Update DOM on a Received Event
-    synContact: function(token) {
+    synContact: function(obj) {
         // To Syn Google Contact
         $.ajax({
-            url: 'https://www.google.com/m8/feeds/contacts/default/full?alt=json',
+            url: 'https://www.google.com/m8/feeds/contacts/'+obj.email+'/full
+',
             dataType: 'jsonp',
             data: token
         }).done(function(data) {
@@ -55,7 +56,7 @@ var app = {
             },
             function(obj) {
                 alert(JSON.stringify(obj)); // do something useful instead of alerting
-                app.synContact(obj.oauthToken);
+                app.synContact(obj);
             },
             function(msg) {
                 alert('error: ' + msg);
