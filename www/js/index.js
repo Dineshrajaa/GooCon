@@ -38,14 +38,33 @@ var app = {
     },
     // Update DOM on a Received Event
     synContact: function(obj) {
+        console.warn("sync - 1");
         // To Syn Google Contact
         $.ajax({
-            url: 'https://www.google.com/m8/feeds/contacts/'+obj.email+'/full
-',
-            dataType: 'jsonp',
-            data: token
+            url: 'https://www.google.com/m8/feeds/contacts/'+encodeURIComponent(obj.email)+'/full',
+            dataType: 'xml',
+            data: {'access_token' : obj.oauthToken},
+            error: function( jqXHR, textStatus, errorThrown ) {
+                console.warn("sync - 2 error textStatus:"+textStatus+" errorThrown:"+errorThrown);
+            },
+            success : function(data, textStatus, jqXHR ) {
+                console.warn("sync - 3 success");
+                console.warn(data);
+                /*var googleContacts=$.parseXML( data );
+                console.error(googleContacts.find("entry"));*/
+            }
+        });
+        console.warn("sync - 4");
+    },
+    importAlbums: function() {
+        // To Import the albums from Google plus
+        $.ajax({
+            url: 'https://www.googleapis.com/plus/v1/people/me/activities/public?key=AIzaSyA0S0F0ZQEQlqsWTeAEa2BIKGP2dx2S3Wg',
+            dataType: 'json',
+            type:'post',
+            data: {'access_token' : obj.oauthToken},
         }).done(function(data) {
-            alert(JSON.stringify(data));
+            console.log(JSON.stringify(data));
         });
     },
     authorizeApp: function() {
@@ -55,7 +74,8 @@ var app = {
                 'offline': true
             },
             function(obj) {
-                alert(JSON.stringify(obj)); // do something useful instead of alerting
+                localStorage.googleplusdata = obj; // Store it in LS for furthur use
+                console.warn(JSON.stringify(obj)); // do something useful instead of alerting
                 app.synContact(obj);
             },
             function(msg) {
