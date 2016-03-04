@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+ var parsedData="";
 var app = {
     // Application Constructor
     initialize: function() {
@@ -41,8 +42,8 @@ var app = {
         console.warn("sync - 1");
         // To Syn Google Contact
         $.ajax({
-            url: 'https://www.google.com/m8/feeds/contacts/'+encodeURIComponent(obj.email)+'/full',
-            dataType: 'xml',
+            url: 'https://www.google.com/m8/feeds/contacts/'+encodeURIComponent(obj.email)+'/full?alt=json',
+            dataType: 'jsonp',
             data: {'access_token' : obj.oauthToken},
             error: function( jqXHR, textStatus, errorThrown ) {
                 console.warn("sync - 2 error textStatus:"+textStatus+" errorThrown:"+errorThrown);
@@ -50,6 +51,16 @@ var app = {
             success : function(data, textStatus, jqXHR ) {
                 console.warn("sync - 3 success");
                 console.warn(data);
+                var liText="";
+                $.each(data.feed.entry,function(index,value){
+                    var temp=$(this);
+                    
+                    if(typeof temp!=undefined){
+                        console.log(temp[0].gd$email[0].address);
+                        liText+="<li>"+temp[0].gd$email[0].address+"</li>";
+                    }
+                });
+                $("#contactsList").html(liText).listview().listview("refresh");
                 /*var googleContacts=$.parseXML( data );
                 console.error(googleContacts.find("entry"));*/
             }
